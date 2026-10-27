@@ -2,80 +2,64 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Venda Videos - Post & Share | Thohoyandou</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Venda TikTok - Swipe Up</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:#000;color:white}
-header{background:#111;padding:12px 15px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10;border-bottom:1px solid #222}
-.logo{font-weight:bold;color:#ff0050}
-.btn{background:#ff0050;color:white;border:none;padding:8px 16px;border-radius:20px;font-weight:bold;cursor:pointer}
-.btn-green{background:#25D366}
-.container{max-width:600px;margin:auto}
-.post-btns{display:flex;gap:8px;padding:12px;background:#111;margin-bottom:10px}
-.video-card{background:#111;margin-bottom:15px;border-radius:12px;overflow:hidden;border:1px solid #222}
-.video-card video, .video-card iframe{width:100%;height:500px;background:black;object-fit:contain}
-.info{padding:12px}
-.info h3{font-size:15px;margin-bottom:5px}
-.info p{font-size:13px;color:#aaa}
-.actions{display:flex;gap:15px;padding:8px 12px;border-top:1px solid #222}
-.actions span{font-size:14px;cursor:pointer}
-.upload-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:100;display:none;padding:20px;overflow:auto}
-.upload-modal.open{display:block}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:black;color:white;overflow:hidden;font-family:Arial}
+header{position:fixed;top:0;left:0;width:100%;padding:10px 15px;display:flex;justify-content:space-between;z-index:10;background:linear-gradient(to bottom, rgba(0,0,0,0.8), transparent)}
+.logo{font-weight:bold;color:white}
+.btn{background:#ff0050;color:white;border:none;padding:7px 14px;border-radius:20px;font-weight:bold;font-size:13px}
+.feed{height:100vh;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch}
+.video-slide{height:100vh;width:100vw;position:relative;scroll-snap-align:start;background:black;display:flex;align-items:center;justify-content:center}
+.video-slide video,.video-slide iframe{width:100%;height:100%;object-fit:cover}
+.overlay{position:absolute;bottom:0;left:0;width:100%;padding:20px 15px 80px 15px;background:linear-gradient(to top, rgba(0,0,0,0.9), transparent);pointer-events:none}
+.overlay *{pointer-events:auto}
+.side-actions{position:absolute;right:10px;bottom:120px;display:flex;flex-direction:column;gap:20px;text-align:center}
+.side-btn{background:rgba(255,255,255,0.15);width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;backdrop-filter:blur(10px)}
+.title{font-size:16px;font-weight:bold;margin-bottom:5px}
+.desc{font-size:13px;color:#ddd;line-height:1.3}
+.btn-row{display:flex;gap:8px;margin-top:12px}
+.btn-wa{background:#25D366;color:white;border:none;padding:8px 12px;border-radius:20px;font-size:13px;font-weight:bold}
+.btn-shop{background:white;color:black;border:none;padding:8px 12px;border-radius:20px;font-size:13px;font-weight:bold}
+.upload-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:100;display:none;padding:20px;overflow:auto}
+.upload-modal.open{display:flex;flex-direction:column;justify-content:center}
 input,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #333;background:#222;color:white;margin:8px 0}
-.upload-box{border:2px dashed #444;padding:30px;text-align:center;border-radius:12px;margin:10px 0;cursor:pointer}
-#preview{width:100%;max-height:300px;margin-top:10px;display:none;border-radius:10px}
+.swipe-hint{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,0.2);padding:6px 14px;border-radius:20px;font-size:12px;z-index:20;animation:fadeOut 3s forwards 2s}
+@keyframes fadeOut{to{opacity:0}}
 </style>
 </head>
 <body>
 <header>
-<div class="logo">▶ Venda Videos</div>
-<div style="display:flex;gap:8px">
-<button class="btn btn-green" onclick="shareSite()">Share</button>
-<button class="btn" onclick="openUpload()">+ Post Video</button>
+<div class="logo">▶ Venda TikTok</div>
+<div>
+<button class="btn" style="background:#25D366;margin-right:6px" onclick="window.open('https://athinaxhuyo.github.io/Marabastad/')">🛒 Store</button>
+<button class="btn" onclick="openUpload()">+ Post</button>
 </div>
 </header>
 
-<div class="container">
-<div class="post-btns">
-<button class="btn" style="background:#222;width:100%" onclick="openUpload()">📤 Upload Video from Gallery</button>
-<button class="btn" style="background:#222;width:100%" onclick="openLinkModal()">🔗 Post YouTube Link</button>
-</div>
-
-<div id="feed"></div>
-</div>
+<div class="swipe-hint">↑ Swipe up for next video ↑</div>
+<div class="feed" id="feed"></div>
 
 <div class="upload-modal" id="uploadModal">
-<h2>Post New Video</h2>
-<div class="upload-box" onclick="document.getElementById('videoFile').click()">
-Click to select video from phone<br><small>MP4, max 50MB - from Samsung gallery</small>
-</div>
-<input type="file" id="videoFile" accept="video/*" style="display:none" onchange="previewVideo(this)">
-<video id="preview" controls></video>
-<input id="vTitle" placeholder="Video Title - e.g. Solar Light Demo Thohoyandou">
-<textarea id="vDesc" placeholder="Description - WhatsApp 0769282315 for orders"></textarea>
-<input id="vHashtag" placeholder="#Hashtags - e.g. #solar #thohoyandou #venda">
-<button class="btn" style="width:100%;padding:14px;margin-top:10px" onclick="publishVideo()">Publish Video</button>
+<h2>Post Video</h2>
+<p style="color:#aaa;font-size:13px;margin:8px 0">Best: Upload to YouTube first, then paste link - lasts forever for all viewers.</p>
+<input type="file" id="videoFile" accept="video/*" style="background:white;color:black;padding:20px" onchange="previewLocal(this)">
+<video id="preview" style="width:100%;max-height:200px;display:none;margin-top:10px" controls></video>
+<input id="vTitle" placeholder="Title - e.g. Solar Bulb R199 Thohoyandou">
+<textarea id="vDesc" placeholder="Description + WhatsApp 0769282315"></textarea>
+<input id="vLink" placeholder="OR paste YouTube link: https://youtu.be/... (leave empty if local)">
+<button class="btn" style="width:100%;padding:14px;margin-top:10px" onclick="publish()">Publish - Swipe Up</button>
 <button class="btn" style="width:100%;background:#333;margin-top:8px" onclick="closeUpload()">Cancel</button>
-<p style="font-size:11px;color:#888;margin-top:10px">Videos are saved in your browser. To make permanent for all customers, upload video to YouTube first then post YouTube link - that way it works on GitHub Pages forever. Email: iamathinavhuyo@gmail.com</p>
-</div>
-
-<div class="upload-modal" id="linkModal">
-<h2>Post YouTube Link (Best for GitHub)</h2>
-<p style="font-size:13px;color:#aaa;margin:10px 0">Upload video to YouTube (unlisted), then paste link here. This makes video visible to everyone forever.</p>
-<input id="ytLink" placeholder="Paste YouTube link - https://youtu.be/...">
-<input id="ytTitle" placeholder="Title">
-<textarea id="ytDesc" placeholder="Description"></textarea>
-<button class="btn" style="width:100%;padding:14px" onclick="publishYT()">Post YouTube Video</button>
-<button class="btn" style="width:100%;background:#333;margin-top:8px" onclick="closeLinkModal()">Cancel</button>
 </div>
 
 <script>
-let videos = JSON.parse(localStorage.getItem('vendaVideos') || '[]');
-if(videos.length==0){
+let videos = JSON.parse(localStorage.getItem('vendaTikTok') || '[]');
+if(videos.length<3){
 videos=[
-{title:"Welcome to Venda Videos - Demo",desc:"Post your solar products videos here! WhatsApp 0769282315",type:"yt",src:"https://www.youtube.com/embed/dQw4w9WgXcQ",likes:12},
-{title:"How Solar Lights Work - Thohoyandou",desc:"Demo of our R199 Solar Bulbs #solar #thohoyandou Contact 0769282315",type:"yt",src:"https://www.youtube.com/embed/9bZkp7q19f0",likes:28}
+{title:"Venda Solar Bulb R199 - Thohoyandou Plaza COD",desc:"4-pack emergency bulbs, charge in sun. WhatsApp 0769282315 #solar #venda",type:"yt",src:"https://www.youtube.com/embed/9bZkp7q19f0",likes:152},
+{title:"Power Bank 20000mAh Demo",desc:"Charge phone 4x, load shedding solution. Order: athinaxhuyo.github.io/Marabastad/ #powerbank",type:"yt",src:"https://www.youtube.com/embed/dQw4w9WgXcQ",likes:89},
+{title:"Camping Lantern Rechargeable",desc:"Bright for shacks, spaza shops. R249 only! Mukuru Pay 0769282315 Paxi nationwide",type:"yt",src:"https://www.youtube.com/embed/JGwWNGJdvx8",likes:203}
 ];
 }
 
@@ -83,56 +67,65 @@ function render(){
 let feed=document.getElementById("feed");
 feed.innerHTML="";
 videos.slice().reverse().forEach((v,i)=>{
-let media = v.type=="local" ? `<video src="${v.src}" controls loop playsinline></video>` : `<iframe src="${v.src}" frameborder="0" allowfullscreen></iframe>`;
-feed.innerHTML+=`<div class="video-card">
+let realIdx=videos.length-1-i;
+let media = v.type=="local" ? `<video src="${v.src}" loop playsinline muted onclick="this.paused?this.play():this.pause()"></video>` : `<iframe src="${v.src}?autoplay=0&mute=1&controls=0&loop=1" frameborder="0"></iframe>`;
+feed.innerHTML+=`<div class="video-slide">
 ${media}
-<div class="info"><h3>${v.title}</h3><p>${v.desc}</p><p style="color:#ff0050;margin-top:5px">${v.hashtag||''}</p></div>
-<div class="actions"><span onclick="likeVideo(${videos.length-1-i})">❤️ ${v.likes||0} Likes</span><span onclick="shareVideo('${v.title}')">📤 Share</span><span onclick="orderWA('${v.title}')">🛒 Order on WhatsApp</span></div>
+<div class="side-actions">
+<div class="side-btn" onclick="like(${realIdx})">❤️<br><small style="font-size:10px">${v.likes||0}</small></div>
+<div class="side-btn" onclick="share('${v.title}')">📤</div>
+<div class="side-btn" onclick="order('${v.title}')">🛒</div>
+</div>
+<div class="overlay">
+<div class="title">${v.title}</div>
+<div class="desc">${v.desc}</div>
+<div class="btn-row">
+<button class="btn-wa" onclick="order('${v.title}')">WhatsApp 0769282315</button>
+<button class="btn-shop" onclick="window.open('https://athinaxhuyo.github.io/Marabastad/')">Visit Store</button>
+</div>
+</div>
 </div>`;
+});
+setTimeout(autoPlay,500);
+}
+
+function autoPlay(){
+let feed=document.getElementById("feed");
+feed.addEventListener('scroll',()=>{
+let slides=document.querySelectorAll('.video-slide video');
+slides.forEach(v=>{
+let rect=v.getBoundingClientRect();
+if(rect.top>= -100 && rect.top <= 100){v.play().catch(()=>{});} else {v.pause();}
+});
 });
 }
 
 function openUpload(){document.getElementById("uploadModal").classList.add("open")}
 function closeUpload(){document.getElementById("uploadModal").classList.remove("open")}
-function openLinkModal(){document.getElementById("linkModal").classList.add("open")}
-function closeLinkModal(){document.getElementById("linkModal").classList.remove("open")}
-
-function previewVideo(input){
-if(input.files && input.files[0]){
+function previewLocal(input){
+if(input.files[0]){
 let url=URL.createObjectURL(input.files[0]);
-let prev=document.getElementById("preview");
-prev.src=url; prev.style.display="block";
-prev.dataset.url=url;
+let p=document.getElementById("preview"); p.src=url; p.style.display="block"; p.dataset.url=url;
 }
 }
-
-function publishVideo(){
-let title=document.getElementById("vTitle").value || "New Video Thohoyandou";
-let desc=document.getElementById("vDesc").value || "WhatsApp 0769282315";
-let hash=document.getElementById("vHashtag").value;
+function publish(){
+let title=document.getElementById("vTitle").value||"Venda Video";
+let desc=document.getElementById("vDesc").value||"WhatsApp 0769282315";
+let ytLink=document.getElementById("vLink").value;
 let preview=document.getElementById("preview");
-if(!preview.src){alert("Select video first");return;}
-videos.push({title:title,desc:desc,hashtag:hash,type:"local",src:preview.dataset.url,likes:0});
-localStorage.setItem('vendaVideos',JSON.stringify(videos));
+if(ytLink){
+let embed=ytLink.replace("watch?v=","embed/").replace("youtu.be/","www.youtube.com/embed/").split("&")[0];
+videos.push({title,desc,type:"yt",src:embed,likes:0});
+}else if(preview.src){
+videos.push({title,desc,type:"local",src:preview.dataset.url,likes:0});
+}else{alert("Select video or paste YouTube link");return;}
+localStorage.setItem('vendaTikTok',JSON.stringify(videos));
 closeUpload(); render();
-alert("Video posted! Note: Local videos only show on your phone. For everyone to see, use YouTube Link option.");
 }
 
-function publishYT(){
-let link=document.getElementById("ytLink").value;
-let title=document.getElementById("ytTitle").value || "Venda Video";
-let desc=document.getElementById("ytDesc").value || "Thohoyandou";
-if(!link){alert("Paste YouTube link");return;}
-let embed=link.replace("watch?v=","embed/").replace("youtu.be/","www.youtube.com/embed/").split("&")[0];
-videos.push({title:title,desc:desc,type:"yt",src:embed,likes:0});
-localStorage.setItem('vendaVideos',JSON.stringify(videos));
-closeLinkModal(); render();
-}
-
-function likeVideo(idx){videos[idx].likes=(videos[idx].likes||0)+1; localStorage.setItem('vendaVideos',JSON.stringify(videos)); render();}
-function shareVideo(t){let url=window.location.href; if(navigator.share){navigator.share({title:t,url:url});} else {prompt("Copy link to share:",url);} }
-function orderWA(t){window.open(`https://wa.me/27769282315?text=Hi, I saw video: ${encodeURIComponent(t)} - I want to order. https://athinaxhuyo.github.io/Marabastad/`,"_blank")}
-function shareSite(){shareVideo("Venda Videos - Thohoyandou")}
+function like(idx){videos[idx].likes=(videos[idx].likes||0)+1; localStorage.setItem('vendaTikTok',JSON.stringify(videos)); render();}
+function share(t){let url=location.href; if(navigator.share){navigator.share({title:t,url:url})} else {prompt("Copy link:",url)}}
+function order(t){window.open(`https://wa.me/27769282315?text=I saw video ${encodeURIComponent(t)} - want to order. Store: https://athinaxhuyo.github.io/Marabastad/`,"_blank")}
 
 render();
 </script>
